@@ -1,7 +1,5 @@
 using System;
 using System.Diagnostics.Contracts;
-using System.Net.NetworkInformation;
-using System.Numerics;
 
 namespace AdventOfCode
 {

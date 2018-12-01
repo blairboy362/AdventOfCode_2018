@@ -13,10 +13,27 @@ namespace AdventOfCode
             }
 
             var calibratedFrequency = new Frequency(0);
+            var frequenciesAlreadyUsed = new HashSet<Frequency>();
+            var foundCalibrationFrequency = false;
+            frequenciesAlreadyUsed.Add(calibratedFrequency);
 
-            foreach (var frequencyDelta in calibrationFrequencies)
+            while (!foundCalibrationFrequency)
             {
-                calibratedFrequency = calibratedFrequency + frequencyDelta;
+                // ReSharper disable once LoopCanBeConvertedToQuery
+                foreach (var frequencyDelta in calibrationFrequencies)
+                {
+                    calibratedFrequency = calibratedFrequency + frequencyDelta;
+
+                    if (frequenciesAlreadyUsed.Contains(calibratedFrequency))
+                    {
+                        foundCalibrationFrequency = true;
+                        break;
+                    }
+                    else
+                    {
+                        frequenciesAlreadyUsed.Add(calibratedFrequency);
+                    }
+                }
             }
 
             return calibratedFrequency;
