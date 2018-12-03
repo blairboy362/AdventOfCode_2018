@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Day02
@@ -15,15 +16,21 @@ namespace Day02
             }
 
             var boxIds = LoadFromFile(args[0]);
-            var checksumCalculator = new ChecksumCalculator();
-            var checksum = checksumCalculator.CalculateChecksum(boxIds);
+            var prototypeFabricLocator = new PrototypeFabricLocator();
+            var checksum = prototypeFabricLocator.CalculateChecksum(boxIds);
 
             Console.WriteLine("Checksum: {0}", checksum);
+
+            var possibleLocations = prototypeFabricLocator.FindSimilarBoxes(boxIds);
+            foreach (var possibleLocation in possibleLocations)
+            {
+                Console.WriteLine("Possible location: {0}", possibleLocation);
+            }
         }
 
-        private static IEnumerable<BoxId> LoadFromFile(string path)
+        private static IList<BoxId> LoadFromFile(string path)
         {
-            var boxIds = new List<BoxId>();
+            var boxIds = new HashSet<BoxId>();
             var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
             using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
             {
@@ -35,7 +42,7 @@ namespace Day02
                 }
             }
 
-            return boxIds;
+            return boxIds.ToList();
         }
     }
 }
