@@ -10,8 +10,17 @@ namespace Day03Tests
         [MemberData(nameof(OverlapCases))]
         public void CountOverlappingClaimsReturnsCorrectCount(IEnumerable<Claim> claims, int expected)
         {
-            var subject = new Fabric();
-            var actual = subject.CountOverlappingClaims(claims);
+            var subject = new FabricClaims(claims);
+            var actual = subject.CountOverlappingClaims();
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(NonOverlappingCases))]
+        public void FindNonOverlappingClaimsCorrectlyReturns(IEnumerable<Claim> claims, IEnumerable<Claim> expected)
+        {
+            var subject = new FabricClaims(claims);
+            var actual = subject.FindNonOverlappingClaims();
             Assert.Equal(expected, actual);
         }
 
@@ -25,6 +34,18 @@ namespace Day03Tests
             };
 
             yield return new object[] {claims, 4};
+        }
+
+        public static IEnumerable<object[]> NonOverlappingCases()
+        {
+            var claims = new List<Claim>()
+            {
+                Claim.FromString("#1 @ 1,3: 4x4"),
+                Claim.FromString("#2 @ 3,1: 4x4"),
+                Claim.FromString("#3 @ 5,5: 2x2"),
+            };
+
+            yield return new object[] {claims, new Claim[] {Claim.FromString("#3 @ 5,5: 2x2")}};
         }
     }
 }

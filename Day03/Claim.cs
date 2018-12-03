@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Day03
@@ -45,40 +46,17 @@ namespace Day03
         public int Id
         {
             get;
-            private set;
         }
 
-        public Coordinates TopLeft
+        public IEnumerable<Coordinates> OccupyingCoordinates
         {
             get;
-            private set;
         }
 
-        public Coordinates TopRight
-        {
-            get;
-            private set;
-        }
-
-        public Coordinates BottomLeft
-        {
-            get;
-            private set;
-        }
-
-        public Coordinates BottomRight
-        {
-            get;
-            private set;
-        }
-
-        public Claim(int id, Coordinates topLeft, Coordinates topRight, Coordinates bottomLeft, Coordinates bottomRight)
+        public Claim(int id, IEnumerable<Coordinates> occupyingCoordinates)
         {
             Id = id;
-            TopLeft = topLeft;
-            TopRight = topRight;
-            BottomLeft = bottomLeft;
-            BottomRight = bottomRight;
+            OccupyingCoordinates = occupyingCoordinates;
         }
 
         public static Claim FromString(string claim)
@@ -90,18 +68,16 @@ namespace Day03
             var width = int.Parse(match.Groups[4].Value);
             var height = int.Parse(match.Groups[5].Value);
 
-            return new Claim(
-                id,
-                new Coordinates(topLeftX, topLeftY),
-                new Coordinates(topLeftX + width, topLeftY),
-                new Coordinates(topLeftX, topLeftY + height),
-                new Coordinates(topLeftX + width, topLeftY + height)
-            );
-        }
+            var occupyingCoordinates = new List<Coordinates>();
+            for (var x = topLeftX; x < topLeftX + width; x++)
+            {
+                for (var y = topLeftY; y < topLeftY + height; y++)
+                {
+                    occupyingCoordinates.Add(new Coordinates(x, y));
+                }
+            }
 
-        protected bool Equals(Claim other)
-        {
-            return Id == other.Id && TopLeft.Equals(other.TopLeft) && TopRight.Equals(other.TopRight) && BottomLeft.Equals(other.BottomLeft) && BottomRight.Equals(other.BottomRight);
+            return new Claim(id, occupyingCoordinates);
         }
 
         public override bool Equals(object obj)
@@ -114,15 +90,17 @@ namespace Day03
 
         public override int GetHashCode()
         {
-            unchecked
-            {
-                var hashCode = Id;
-                hashCode = (hashCode * 397) ^ TopLeft.GetHashCode();
-                hashCode = (hashCode * 397) ^ TopRight.GetHashCode();
-                hashCode = (hashCode * 397) ^ BottomLeft.GetHashCode();
-                hashCode = (hashCode * 397) ^ BottomRight.GetHashCode();
-                return hashCode;
-            }
+            return Id.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return $"{nameof(Id)}: {Id}";
+        }
+
+        protected bool Equals(Claim other)
+        {
+            return Id == other.Id;
         }
     }
 }

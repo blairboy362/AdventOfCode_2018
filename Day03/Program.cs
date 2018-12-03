@@ -14,10 +14,16 @@ namespace Day03
             }
 
             var claims = LoadFromFile(args[0]);
-            var fabric = new Fabric();
-            var overlappingClaimCount = fabric.CountOverlappingClaims(claims);
+            var fabric = new FabricClaims(claims);
+            var overlappingClaimCount = fabric.CountOverlappingClaims();
 
             Console.WriteLine("Overlapping claim count: {0}", overlappingClaimCount);
+
+            var nonOverlappingClaims = fabric.FindNonOverlappingClaims();
+            foreach (var nonOverlappingClaim in nonOverlappingClaims)
+            {
+                Console.WriteLine("Non-overlapping claim: {0}", nonOverlappingClaim);
+            }
         }
 
         private static IEnumerable<Claim> LoadFromFile(string path)
