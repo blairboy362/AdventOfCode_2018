@@ -56,6 +56,11 @@ namespace Day04
         {
         }
 
+        public bool Slept()
+        {
+            return _sleepingMinutes.Any();
+        }
+
         public int TotalMinutesAsleep()
         {
             return _sleepingMinutesHistogram.Sum(m => m.Frequency);

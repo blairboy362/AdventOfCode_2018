@@ -23,6 +23,15 @@ namespace Day04
                 sleepyGuard.Id,
                 sleepiestMinute,
                 sleepyGuard.Id * sleepiestMinute);
+
+            var consistentSleeper = shiftAnalyser.FindGuardAsleepTheSameMinuteTheMost();
+            var favouredMinute = consistentSleeper.SleepiestMinute().Minute;
+
+            Console.WriteLine(
+                "Guard asleep most consistently has ID: {0}, the minute is {1} so the answer is {2}",
+                consistentSleeper.Id,
+                favouredMinute,
+                consistentSleeper.Id * favouredMinute);
         }
 
         private static IEnumerable<Event> LoadFromFile(string path)

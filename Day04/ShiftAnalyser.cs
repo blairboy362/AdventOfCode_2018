@@ -19,10 +19,16 @@ namespace Day04
             AnalyseShifts();
         }
 
+        private IEnumerable<Guard> SleepingGuards
+        {
+            get { return _guards.Where(g => g.Slept()); }
+        }
+
         public Guard FindGuardAsleepTheMost()
         {
-            var longestSleep = _guards.Max(g => g.TotalMinutesAsleep());
-            var guardsAsleepLongest = _guards
+            var longestSleep = SleepingGuards
+                .Max(g => g.TotalMinutesAsleep());
+            var guardsAsleepLongest = SleepingGuards
                 .Where(g => g.TotalMinutesAsleep() == longestSleep);
             if (guardsAsleepLongest.Count() > 1)
             {
@@ -35,6 +41,21 @@ namespace Day04
             return guardsAsleepLongest.Single();
         }
 
+        public Guard FindGuardAsleepTheSameMinuteTheMost()
+        {
+            var highestFrequency = SleepingGuards.Max(g => g.SleepiestMinute().Frequency);
+            var candidates = SleepingGuards.Where(g => g.SleepiestMinute().Frequency == highestFrequency);
+            if (candidates.Count() > 1)
+            {
+                throw new InvalidOperationException(
+                    string.Format(
+                        "More than one guard is asleep the most often on the same minute! {0}",
+                        candidates.Count()));
+            }
+
+            return candidates.Single();
+        }
+
         private void AnalyseShifts()
         {
             var sortedEvents = _events.OrderBy(e => e.Time);
@@ -44,28 +65,7 @@ namespace Day04
                 var guardIdMatch = GuardIdPattern.Match(@event.EventDescription);
                 if (guardIdMatch.Success)
                 {
-                    if (currentGuardBuilder != default(GuardBuilder))
-                    {
-                        var newGuard = currentGuardBuilder.Build();
-                        if (_guards.Contains(newGuard))
-                        {
-                            if (!_guards.TryGetValue(newGuard, out var existingGuard))
-                            {
-                                throw new InvalidOperationException(
-                                    string.Format("Guard contained but not gettable: {0}", newGuard));
-                            }
-
-                            if (!_guards.Remove(existingGuard))
-                            {
-                                throw new InvalidOperationException(
-                                    string.Format("Failed to remove existing guard: {0}", existingGuard));
-                            }
-
-                            newGuard = new Guard(existingGuard, newGuard);
-                        }
-
-                        _guards.Add(newGuard);
-                    }
+                    AddNewGuard(currentGuardBuilder);
 
                     currentGuardBuilder = new GuardBuilder()
                         .WithId(int.Parse(guardIdMatch.Groups[1].Value));
@@ -96,6 +96,34 @@ namespace Day04
                     throw new InvalidOperationException(
                         string.Format("Don't know what to do with {0}", @event));
                 }
+            }
+
+            AddNewGuard(currentGuardBuilder);
+        }
+
+        private void AddNewGuard(GuardBuilder currentGuardBuilder)
+        {
+            if (currentGuardBuilder != default(GuardBuilder))
+            {
+                var newGuard = currentGuardBuilder.Build();
+                if (_guards.Contains(newGuard))
+                {
+                    if (!_guards.TryGetValue(newGuard, out var existingGuard))
+                    {
+                        throw new InvalidOperationException(
+                            string.Format("Guard contained but not gettable: {0}", newGuard));
+                    }
+
+                    if (!_guards.Remove(existingGuard))
+                    {
+                        throw new InvalidOperationException(
+                            string.Format("Failed to remove existing guard: {0}", existingGuard));
+                    }
+
+                    newGuard = new Guard(existingGuard, newGuard);
+                }
+
+                _guards.Add(newGuard);
             }
         }
     }
