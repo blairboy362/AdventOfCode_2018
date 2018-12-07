@@ -44,9 +44,11 @@ namespace Day06
                 {
                     var coordinates = new Coordinates(x, y);
                     var closestDistance = _locations
+                        .AsParallel()
                         .Select(l => l.ManhattanDistanceFrom(coordinates))
                         .Min();
                     var closestLocations = _locations
+                        .AsParallel()
                         .Where(l => l.ManhattanDistanceFrom(coordinates) == closestDistance);
 
                     if (closestLocations.Count() == 1)
@@ -66,17 +68,23 @@ namespace Day06
         private IEnumerable<Point> TrimInfiniteAreas(IEnumerable<Point> map)
         {
             var pointsAtEdges = map
+                .AsParallel()
                 .Where(p =>
                     p.Coordinates.X == _topLeft.X ||
                     p.Coordinates.X == _bottomRight.X ||
                     p.Coordinates.Y == _topLeft.Y ||
-                    p.Coordinates.Y == _bottomRight.Y);
+                    p.Coordinates.Y == _bottomRight.Y)
+                .ToHashSet();
             var associatedLocations = pointsAtEdges
+                .AsParallel()
                 .Where(p => p.HasNearestLocation)
-                .Select(p => p.NearestLocation);
+                .Select(p => p.NearestLocation)
+                .ToHashSet();
             return map
+                .AsParallel()
                 .Where(p => p.HasNearestLocation)
-                .Where(p => !(associatedLocations.Contains(p.NearestLocation)));
+                .Where(p => !(associatedLocations.Contains(p.NearestLocation)))
+                .ToHashSet();
         }
 
         private IEnumerable<SafePoint> BuildAndPopulateSafeMap()
