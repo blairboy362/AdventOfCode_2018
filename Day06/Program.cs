@@ -15,9 +15,10 @@ namespace Day06
 
             var locations = LoadFromFile(args[0]);
             var universe = new Universe(locations);
-            var largestAreaSize = universe.SizeOfLargestNonInfiniteArea();
-
-            Console.WriteLine("The largest area size is {0}", largestAreaSize);
+            //var largestAreaSize = universe.SizeOfLargestNonInfiniteArea();
+            //Console.WriteLine("The largest area size is {0}", largestAreaSize);
+            var sizeOfSafeRegion = universe.SizeOfSafeRegion(10000);
+            Console.WriteLine("The safe region size is {0}", sizeOfSafeRegion);
         }
 
         private static IEnumerable<Location> LoadFromFile(string path)

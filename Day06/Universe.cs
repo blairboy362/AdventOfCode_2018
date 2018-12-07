@@ -29,6 +29,12 @@ namespace Day06
                 .Count();
         }
 
+        public int SizeOfSafeRegion(int tolerance)
+        {
+            var map = BuildAndPopulateSafeMap();
+            return map.Count(p => p.ManhattanDistances.Sum() < tolerance);
+        }
+
         private IEnumerable<Point> BuildAndPopulateMap()
         {
             var map = new HashSet<Point>();
@@ -73,6 +79,21 @@ namespace Day06
                 .Where(p => !(associatedLocations.Contains(p.NearestLocation)));
         }
 
+        private IEnumerable<SafePoint> BuildAndPopulateSafeMap()
+        {
+            var map = new HashSet<SafePoint>();
+            for (var x = 0; x <= _bottomRight.X; x++)
+            {
+                for (var y = 0; y <= _bottomRight.Y; y++)
+                {
+                    var coordinates = new Coordinates(x, y);
+                    map.Add(new SafePoint(coordinates, _locations));
+                }
+            }
+
+            return map;
+        }
+
         private class Point
         {
             public Coordinates Coordinates { get; }
@@ -102,6 +123,36 @@ namespace Day06
             protected bool Equals(Point other)
             {
                 return Coordinates.Equals(other.Coordinates);
+            }
+        }
+
+        private class SafePoint
+        {
+            private readonly Coordinates _coordinates;
+            public IEnumerable<int> ManhattanDistances { get; }
+
+            public SafePoint(Coordinates coordinates, IEnumerable<Location> locations)
+            {
+                _coordinates = coordinates;
+                ManhattanDistances = locations.Select(l => l.ManhattanDistanceFrom(_coordinates));
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                if (ReferenceEquals(this, obj)) return true;
+                if (obj.GetType() != this.GetType()) return false;
+                return Equals((SafePoint) obj);
+            }
+
+            public override int GetHashCode()
+            {
+                return _coordinates.GetHashCode();
+            }
+
+            protected bool Equals(SafePoint other)
+            {
+                return _coordinates.Equals(other._coordinates);
             }
         }
     }

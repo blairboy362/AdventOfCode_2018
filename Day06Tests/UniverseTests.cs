@@ -15,6 +15,15 @@ namespace Day06Tests
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(SafeRegionCases))]
+        public void SizeOfSafeRegionResturnsCorrectly(IEnumerable<Location> locations, int tolerance, int expected)
+        {
+            var subject = new Universe(locations);
+            var actual = subject.SizeOfSafeRegion(tolerance);
+            Assert.Equal(expected, actual);
+        }
+
         public static IEnumerable<object[]> AreaCases()
         {
             var locations = new HashSet<Location>()
@@ -27,6 +36,20 @@ namespace Day06Tests
                 new Location(new Coordinates(8, 9)),
             };
             yield return new object[] {locations, 17};
+        }
+
+        public static IEnumerable<object[]> SafeRegionCases()
+        {
+            var locations = new HashSet<Location>()
+            {
+                new Location(new Coordinates(1, 1)),
+                new Location(new Coordinates(1, 6)),
+                new Location(new Coordinates(8, 3)),
+                new Location(new Coordinates(3, 4)),
+                new Location(new Coordinates(5, 5)),
+                new Location(new Coordinates(8, 9)),
+            };
+            yield return new object[] {locations, 32, 16};
         }
     }
 }
