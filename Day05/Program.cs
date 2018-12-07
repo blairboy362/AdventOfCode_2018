@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
@@ -19,6 +18,10 @@ namespace Day05
             var suitAfter = polymer.Activate();
 
             Console.WriteLine("Suit after activation has length {0}", suitAfter.Length);
+
+            var shortestPolymer = polymer.ActivateShortest();
+
+            Console.WriteLine("Shortest suit polymer has length: {0}", shortestPolymer.Length);
         }
 
         private static IList<Unit> LoadFromFile(string path)

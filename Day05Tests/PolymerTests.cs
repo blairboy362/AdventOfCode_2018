@@ -16,6 +16,15 @@ namespace Day05Tests
             Assert.Equal(expected, actual, StringComparer.InvariantCulture);
         }
 
+        [Theory]
+        [MemberData(nameof(ActivateShortestCases))]
+        public void ActivateShortestReturnsCorrectly(IList<Unit> units, string expected)
+        {
+            var subject = new Polymer(units);
+            var actual = subject.ActivateShortest();
+            Assert.Equal(expected, actual, StringComparer.InvariantCulture);
+        }
+
         public static IEnumerable<object[]> ActivateCases()
         {
             var units = new List<Unit>()
@@ -74,6 +83,30 @@ namespace Day05Tests
                 new Unit('A'),
             };
             yield return new object[] {units, "dabCBAcaDA"};
+        }
+
+        public static IEnumerable<object[]> ActivateShortestCases()
+        {
+            var units = new List<Unit>()
+            {
+                new Unit('d'),
+                new Unit('a'),
+                new Unit('b'),
+                new Unit('A'),
+                new Unit('c'),
+                new Unit('C'),
+                new Unit('a'),
+                new Unit('C'),
+                new Unit('B'),
+                new Unit('A'),
+                new Unit('c'),
+                new Unit('C'),
+                new Unit('c'),
+                new Unit('a'),
+                new Unit('D'),
+                new Unit('A'),
+            };
+            yield return new object[] {units, "daDA"};
         }
     }
 }

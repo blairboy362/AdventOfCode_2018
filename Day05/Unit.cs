@@ -23,6 +23,11 @@ namespace Day05
             return _type.Equals(other._type) && _polarity != other._polarity;
         }
 
+        public bool EqualsIgnorePolarity(Unit other)
+        {
+            return _type.Equals(other._type);
+        }
+
         public override string ToString()
         {
             return $"{_type}, {_polarity}";
