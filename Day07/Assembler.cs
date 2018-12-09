@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,13 +10,14 @@ namespace Day07
 {
     public class Assembler
     {
-        private static readonly Regex InstructionPattern = new Regex(@"Step ([A-Z]) must be finished before step ([A-Z]) can begin.");
+        private static readonly Regex InstructionPattern =
+            new Regex(@"Step ([A-Z]) must be finished before step ([A-Z]) can begin.");
 
         private readonly IEnumerable<Step> _instructionGraph;
 
-        public Assembler(IEnumerable<string> instructions)
+        public Assembler(IEnumerable<string> instructions, int baselineDuration = 0)
         {
-            _instructionGraph = ParseInstructions(instructions);
+            _instructionGraph = ParseInstructions(instructions, baselineDuration);
         }
 
         public string Assemble()
@@ -38,7 +41,31 @@ namespace Day07
             return orderOfCompletion.ToString();
         }
 
-        private static IEnumerable<Step> ParseInstructions(IEnumerable<string> instructions)
+        public int AssembleWithMultipleWorkers(int workerCount)
+        {
+            var workers = new List<Worker>(workerCount);
+            for (int i = 0; i < workerCount; i++)
+            {
+                workers.Add(new Worker(i));
+            }
+
+            var totalTicks = 0;
+            while (_instructionGraph.Any(s => !s.Completed))
+            {
+                AssignWork(workers);
+                foreach (var worker in workers)
+                {
+                    worker.Tick();
+                }
+                totalTicks++;
+
+                CompleteWork(workers);
+            }
+
+            return totalTicks;
+        }
+
+        private static IEnumerable<Step> ParseInstructions(IEnumerable<string> instructions, int baselineDuration)
         {
             var instructionGraph = new HashSet<Step>();
 
@@ -50,8 +77,8 @@ namespace Day07
                     throw new InvalidOperationException(string.Format("Failed to match instruction {0}", instruction));
                 }
 
-                var prerequisite = new Step(match.Groups[1].Value[0]);
-                var current = new Step(match.Groups[2].Value[0]);
+                var prerequisite = new Step(match.Groups[1].Value[0], baselineDuration);
+                var current = new Step(match.Groups[2].Value[0], baselineDuration);
 
                 if (instructionGraph.TryGetValue(prerequisite, out var capture))
                 {
@@ -75,6 +102,37 @@ namespace Day07
             }
 
             return instructionGraph;
+        }
+
+        private Step GetNextStep()
+        {
+            return _instructionGraph
+                .Where(s => s.CanStart())
+                .ToArray()
+                .OrderBy(s => s)
+                .FirstOrDefault();
+        }
+
+        private void AssignWork(IList<Worker> workers)
+        {
+            var nextStep = GetNextStep();
+            while (nextStep != default(Step) && workers.Any(w => w.CanAssignWork))
+            {
+                workers.First(w => w.CanAssignWork).AssignWork(nextStep);
+                nextStep = GetNextStep();
+            }
+        }
+
+        private void CompleteWork(IList<Worker> workers)
+        {
+            var workersWithCompletedWork = workers
+                .Where(w => w.Completed)
+                .OrderBy(w => w.CurrentStep);
+            foreach (var worker in workersWithCompletedWork)
+            {
+                worker.CurrentStep.Complete();
+                worker.Reset();
+            }
         }
     }
 }

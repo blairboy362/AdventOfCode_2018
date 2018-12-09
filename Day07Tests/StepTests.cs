@@ -41,6 +41,14 @@ namespace Day07Tests
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(DurationCases))]
+        public void ConstructorSetsDurationCorrectly(Step subject, int expected)
+        {
+            var actual = subject.Duration;
+            Assert.Equal(expected, actual);
+        }
+
         public static IEnumerable<object[]> CanStartCases()
         {
             var step = new Step('A');
@@ -59,6 +67,18 @@ namespace Day07Tests
             step = new Step('F');
             step.Complete();
             yield return new object[] {step, false};
+
+            step = new Step('G');
+            step.Start();
+            yield return new object[] {step, false};
+        }
+
+        public static IEnumerable<object[]> DurationCases()
+        {
+            yield return new object[] { new Step('A'), 1};
+            yield return new object[] { new Step('Z'), 26};
+            yield return new object[] { new Step('A', 60), 61};
+            yield return new object[] { new Step('Z', 60), 86};
         }
     }
 }

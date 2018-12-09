@@ -8,11 +8,18 @@ namespace Day07
     {
         private readonly char _id;
         private readonly ICollection<Step> _prerequisites;
+        private bool _inProgress;
 
-        public Step(char id)
+        public Step(char id, int baselineDuration = 0)
         {
             _id = id;
             _prerequisites = new HashSet<Step>();
+            Duration = baselineDuration + _id - 'A' + 1;
+        }
+
+        public int Duration
+        {
+            get;
         }
 
         public bool Completed
@@ -23,18 +30,24 @@ namespace Day07
 
         public bool CanStart()
         {
-            return !Completed && (_prerequisites.Count == 0 || _prerequisites.All(p => p.Completed));
+            return !Completed && !_inProgress && (_prerequisites.Count == 0 || _prerequisites.All(p => p.Completed));
+        }
+
+        public void Start()
+        {
+            _inProgress = true;
         }
 
         public char Complete()
         {
-            if (!CanStart())
+            if (!Completed && (_inProgress || (_prerequisites.Count == 0 || _prerequisites.All(p => p.Completed))))
             {
-                throw new InvalidOperationException("Cannot complete - incomplete prerequisites exist!");
+                Completed = true;
+                return _id;
             }
 
-            Completed = true;
-            return _id;
+            throw new InvalidOperationException(
+                $"Cannot complete - {Completed}, {_inProgress}, {_prerequisites.Count}, {_prerequisites.All(p => p.Completed)}!");
         }
 
         public void AddPrerequisite(Step prerequisite)

@@ -17,6 +17,10 @@ namespace Day07
             var assembler = new Assembler(instructions);
             var orderOfAssembly = assembler.Assemble();
             Console.WriteLine("Order of assembly is: {0}", orderOfAssembly);
+
+            var multiWorkerAssember = new Assembler(instructions, 60);
+            var timeToAssemble = multiWorkerAssember.AssembleWithMultipleWorkers(5);
+            Console.WriteLine("Time taken to assemble with multiple workers: {0}", timeToAssemble);
         }
 
         private static IEnumerable<string> LoadFromFile(string path)
