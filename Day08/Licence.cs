@@ -30,6 +30,8 @@ namespace Day08
             }
         }
 
+        public int RootNodeValue => _nodes.First().Value;
+
         private static IEnumerable<int> ParseRawTokens(string licence)
         {
             var tokens = new List<int>();

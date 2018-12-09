@@ -15,8 +15,10 @@ namespace Day08
             var rawLicence = LoadFromFile(args[0]);
             var licence = Licence.FromString(rawLicence);
             var metadataSum = licence.MetadataSum;
-
             Console.WriteLine("Metadata sum: {0}", metadataSum);
+
+            var rootNodeValue = licence.RootNodeValue;
+            Console.WriteLine("Root node value: {0}", rootNodeValue);
         }
 
         private static string LoadFromFile(string path)
