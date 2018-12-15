@@ -10,7 +10,7 @@ namespace Day09
         private readonly IList<Player> _players;
         private readonly IList<Marble> _marbles;
 
-        public int HighestScore
+        public long HighestScore
         {
             get { return _players.Max(p => p.Score); }
         }
@@ -164,6 +164,4 @@ namespace Day09
             }
         }
     }
-
-
 }

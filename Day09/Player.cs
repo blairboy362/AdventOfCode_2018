@@ -4,7 +4,7 @@ namespace Day09
     {
         private readonly int _id;
 
-        public int Score { get; private set; }
+        public long Score { get; private set; }
 
         public Player(int id)
         {

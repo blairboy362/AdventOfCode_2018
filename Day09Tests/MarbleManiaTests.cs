@@ -12,7 +12,7 @@ namespace Day09Tests
         [InlineData(17, 1104, 2764)]
         [InlineData(21, 6111, 54718)]
         [InlineData(30, 5807, 37305)]
-        public void PlayCompletesCorrectly(int playerCount, int lastMarble, int expected)
+        public void PlayCompletesCorrectly(int playerCount, int lastMarble, long expected)
         {
             var subject = new MarbleMania(playerCount, lastMarble);
             subject.Play();

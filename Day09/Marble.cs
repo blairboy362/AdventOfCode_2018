@@ -2,9 +2,9 @@ namespace Day09
 {
     public class Marble
     {
-        public int Value { get; }
+        public long Value { get; }
 
-        public Marble(int value)
+        public Marble(long value)
         {
             Value = value;
         }
@@ -34,7 +34,7 @@ namespace Day09
 
         public override int GetHashCode()
         {
-            return Value;
+            return Value.GetHashCode();
         }
 
         protected bool Equals(Marble other)
