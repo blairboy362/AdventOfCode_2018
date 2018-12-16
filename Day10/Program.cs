@@ -15,13 +15,16 @@ namespace Day10
 
             var points = LoadFromFile(args[0]);
             var skyMap = new SkyMap(points);
+            var timer = 0;
             while(skyMap.Tick())
             {
+                timer++;
             }
 
             skyMap.Paint();
 
-            Console.SetCursorPosition(0, Console.BufferHeight - 1);
+            Console.WriteLine();
+            Console.WriteLine("Number of seconds: {0}", timer);
         }
 
         private static IEnumerable<Point> LoadFromFile(string path)
