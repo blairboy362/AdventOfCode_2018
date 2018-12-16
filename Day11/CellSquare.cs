@@ -1,38 +1,32 @@
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Day11
 {
     public class CellSquare
     {
-        private readonly ICollection<FuelCell> _cells;
-
         public Coordinates TopLeft { get; }
+        public int Size { get; }
 
-        public int Power
-        {
-            get { return _cells.Sum(c => c.Power); }
-        }
+        public long Power { get; private set; }
 
-        public CellSquare(Coordinates topLeft, IDictionary<Coordinates, FuelCell> fuelCells)
+        public CellSquare(Coordinates topLeft, IDictionary<Coordinates, long> summedAreaTable, int size)
         {
             TopLeft = topLeft;
-            _cells = AssignCells(fuelCells);
+            Size = size;
+            CalculatePower(summedAreaTable);
         }
 
-        private ICollection<FuelCell> AssignCells(IDictionary<Coordinates, FuelCell> fuelCells)
+        private void CalculatePower(IDictionary<Coordinates, long> summedAreaTable)
         {
-            var cells = new List<FuelCell>(9);
-            for (var x = TopLeft.X; x <= TopLeft.X + 2; x++)
-            {
-                for (var y = TopLeft.Y; y <= TopLeft.Y + 2; y++)
-                {
-                    var coordinates = new Coordinates(x, y);
-                    cells.Add(fuelCells[coordinates]);
-                }
-            }
+            Power = GetSummedAreaForCoordinates(new Coordinates(TopLeft.X - 1, TopLeft.Y - 1), summedAreaTable) +
+                GetSummedAreaForCoordinates(new Coordinates(TopLeft.X + Size - 1, TopLeft.Y + Size - 1), summedAreaTable) -
+                GetSummedAreaForCoordinates(new Coordinates(TopLeft.X + Size - 1, TopLeft.Y - 1), summedAreaTable) -
+                GetSummedAreaForCoordinates(new Coordinates(TopLeft.X - 1, TopLeft.Y + Size - 1), summedAreaTable);
+        }
 
-            return cells;
+        private static long GetSummedAreaForCoordinates(Coordinates coordinates, IDictionary<Coordinates, long> summedAreaTable)
+        {
+            return summedAreaTable.ContainsKey(coordinates) ? summedAreaTable[coordinates] : 0;
         }
     }
 }

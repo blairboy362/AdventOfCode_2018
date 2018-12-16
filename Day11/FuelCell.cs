@@ -4,7 +4,7 @@ namespace Day11
     {
         private readonly Coordinates _coordinates;
 
-        public int Power { get; }
+        public long Power { get; }
 
         public FuelCell(Coordinates coordinates, int gridSerialNumber)
         {
@@ -35,9 +35,9 @@ namespace Day11
             return _coordinates.Equals(other._coordinates);
         }
 
-        private int CalculatePower(int gridSerialNumber)
+        private long CalculatePower(int gridSerialNumber)
         {
-            var rackId = _coordinates.X + 10;
+            var rackId = (long)(_coordinates.X + 10);
             var power = rackId * _coordinates.Y;
             power += gridSerialNumber;
             power *= rackId;
