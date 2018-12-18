@@ -14,9 +14,13 @@ namespace Day12
             }
 
             var simulator = LoadFromFile(args[0]);
-            simulator.Simulate(20);
+            var generationCount = 50000000000;
+            simulator.Simulate(generationCount);
 
-            Console.WriteLine("Sum of plant pot entries after 20 generations: {0}", simulator.SumPottedPlants);
+            Console.WriteLine(
+                "Sum of plant pot entries after {0} generations: {1}",
+                generationCount,
+                simulator.SumPottedPlants);
         }
 
         private static Simulator LoadFromFile(string path)

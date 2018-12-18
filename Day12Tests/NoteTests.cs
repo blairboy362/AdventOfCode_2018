@@ -8,7 +8,7 @@ namespace Day12Tests
     {
         [Theory]
         [MemberData(nameof(FromStringCases))]
-        public void FromStringAndMatchesReturnsCorrectly(string note, IDictionary<int, PlantPot> plantPots, bool expectedMatches, bool expectedPlantPotNextGen)
+        public void FromStringAndMatchesReturnsCorrectly(string note, IDictionary<long, PlantPot> plantPots, bool expectedMatches, bool expectedPlantPotNextGen)
         {
             var subject = Note.FromString(note);
             var actualMatches = subject.Matches(plantPots, 0);
@@ -18,7 +18,7 @@ namespace Day12Tests
 
         public static IEnumerable<object[]> FromStringCases()
         {
-            var plantPots = new Dictionary<int, PlantPot>()
+            var plantPots = new Dictionary<long, PlantPot>()
             {
                 {-2, PlantPot.PotWithoutPlant},
                 {-1, PlantPot.PotWithoutPlant},

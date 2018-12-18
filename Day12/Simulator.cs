@@ -6,30 +6,22 @@ namespace Day12
 {
     public class Simulator
     {
-        private readonly IDictionary<int, PlantPot> _initialState;
+        private readonly IDictionary<long, PlantPot> _initialState;
         private readonly IEnumerable<Note> _notes;
-        private IDictionary<int, PlantPot> _forecastState;
+        private IDictionary<long, PlantPot> _forecastState;
 
-        public Simulator(IDictionary<int, PlantPot> initialState, IEnumerable<Note> notes)
+        public Simulator(IDictionary<long, PlantPot> initialState, IEnumerable<Note> notes)
         {
             _initialState = initialState;
             _notes = notes;
-            _forecastState = new Dictionary<int, PlantPot>();
+            _forecastState = new Dictionary<long, PlantPot>();
         }
 
-        public int SumPottedPlants
-        {
-            get
-            {
-                return _forecastState
-                    .Where(kvp => kvp.Value.HasPlant)
-                    .Sum(kvp => kvp.Key);
-            }
-        }
+        public long SumPottedPlants { get; private set; }
 
         public static Simulator FromStrings(string initialStateDescription, IEnumerable<string> noteDescriptions)
         {
-            var initialState = new Dictionary<int, PlantPot>();
+            var initialState = new Dictionary<long, PlantPot>();
 
             for (var i = 0; i < initialStateDescription.Length; i++)
             {
@@ -51,23 +43,39 @@ namespace Day12
             return new Simulator(initialState, notes);
         }
 
-        public void Simulate(int generations)
+        public void Simulate(long generations)
         {
-            IDictionary<int, PlantPot> forecastState = new Dictionary<int, PlantPot>(_initialState);
-            NormalizeGeneration(forecastState);
-            PrintGeneration(forecastState);
+            const int rollingBufferCapacity = 3;
+            var rollingSumDifferences = new RollingBuffer<long>(rollingBufferCapacity);
+            _forecastState = new Dictionary<long, PlantPot>(_initialState);
+            NormalizeGeneration(_forecastState);
+            PrintGeneration(_forecastState);
+            SumPottedPlants = CalculatePottedPlantsSum();
+            var lastGenerationSum = SumPottedPlants;
 
             for (var i = 0; i < generations; i++)
             {
-                forecastState = ForecastNextGeneration(forecastState);
-                NormalizeGeneration(forecastState);
-                PrintGeneration(forecastState);
+                _forecastState = ForecastNextGeneration(_forecastState);
+                NormalizeGeneration(_forecastState);
+                var sumThisGeneration = CalculatePottedPlantsSum();
+                rollingSumDifferences.Add(sumThisGeneration - lastGenerationSum);
+                PrintGeneration(_forecastState);
+                var recurrentDifference = rollingSumDifferences.First();
+
+                if (rollingSumDifferences.All(d => d == recurrentDifference))
+                {
+                    var root = sumThisGeneration - (rollingBufferCapacity * recurrentDifference);
+                    lastGenerationSum = root + (recurrentDifference * (generations - i + rollingBufferCapacity - 1));
+                    break;
+                }
+
+                lastGenerationSum = sumThisGeneration;
             }
 
-            _forecastState = forecastState;
+            SumPottedPlants = lastGenerationSum;
         }
 
-        private static void PrintGeneration(IDictionary<int, PlantPot> generation)
+        private static void PrintGeneration(IDictionary<long, PlantPot> generation)
         {
             foreach (var pot in generation.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value))
             {
@@ -77,7 +85,7 @@ namespace Day12
             Console.WriteLine();
         }
 
-        private static void NormalizeGeneration(IDictionary<int, PlantPot> generation)
+        private static void NormalizeGeneration(IDictionary<long, PlantPot> generation)
         {
             var firstPotNumberWithPlant = generation
                 .Where(kvp => kvp.Value.HasPlant)
@@ -118,9 +126,9 @@ namespace Day12
             }
         }
 
-        private IDictionary<int, PlantPot> ForecastNextGeneration(IDictionary<int, PlantPot> currentGeneration)
+        private IDictionary<long, PlantPot> ForecastNextGeneration(IDictionary<long, PlantPot> currentGeneration)
         {
-            IDictionary<int, PlantPot> nextGeneration = new Dictionary<int, PlantPot>();
+            IDictionary<long, PlantPot> nextGeneration = new Dictionary<long, PlantPot>();
             var startingPotNumber = currentGeneration.Keys.OrderBy(k => k).First();
 
             for (var i = 0; i < currentGeneration.Count; i++)
@@ -138,6 +146,13 @@ namespace Day12
             }
 
             return nextGeneration;
+        }
+
+        private long CalculatePottedPlantsSum()
+        {
+            return _forecastState
+                .Where(kvp => kvp.Value.HasPlant)
+                .Sum(kvp => kvp.Key);
         }
     }
 }

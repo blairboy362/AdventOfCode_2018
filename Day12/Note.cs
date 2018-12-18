@@ -18,7 +18,7 @@ namespace Day12
             WillContainPlantNextGeneration = willContainPlantNextGeneration;
         }
 
-        public bool Matches(IDictionary<int, PlantPot> plantPots, int currentPosition)
+        public bool Matches(IDictionary<long, PlantPot> plantPots, long currentPosition)
         {
             for (var i = -2; i <= 2; i++)
             {

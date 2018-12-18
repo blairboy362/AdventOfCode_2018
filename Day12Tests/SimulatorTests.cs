@@ -8,7 +8,7 @@ namespace Day12Tests
     {
         [Theory]
         [MemberData(nameof(SimulateCases))]
-        public void SimulateCompletesCorrectly(IDictionary<int, PlantPot> initialState, IEnumerable<Note> notes, int generations, int expectedSum)
+        public void SimulateCompletesCorrectly(IDictionary<long, PlantPot> initialState, IEnumerable<Note> notes, long generations, long expectedSum)
         {
             var subject = new Simulator(initialState, notes);
             subject.Simulate(generations);
@@ -17,7 +17,7 @@ namespace Day12Tests
 
         public static IEnumerable<object[]> SimulateCases()
         {
-            var initialState = new Dictionary<int, PlantPot>()
+            var initialState = new Dictionary<long, PlantPot>()
             {
                 {0, PlantPot.PotWithPlant},
                 {1, PlantPot.PotWithoutPlant},
